@@ -73,7 +73,7 @@ def on_message(client, userdata, message):
    elif "humidity" in msgTopic:
       if abs(float(msgPayload)-float(prevH))>delta_TH:
          print("H= " + msgPayload)
-         fd.write(dt_string + ";" + prevH + ";" + msgPayload + "\n")
+         fd.write(dt_string + ";" + prevT + ";" + msgPayload + "\n")
          prevH=msgPayload
    fd.close()
     
