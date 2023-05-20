@@ -8,8 +8,8 @@
 #include <PubSubClient.h>
 #include <DHT.h>
 
-#define wifi_ssid "LZ_24G"
-#define wifi_password "*andromedA01."
+#define wifi_ssid "wifi net"
+#define wifi_password "*xxxxxx"
 
 #define mqtt_server "192.168.1.104"
 //#define mqtt_user "pi"
