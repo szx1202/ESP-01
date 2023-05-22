@@ -1,1 +1,1 @@
-
+this scketch allows to send a command via web to ESP=01s, to activate or deacivate a relay. the ESP-01s will connect to web and exposes a web server that can be reached via browser i.e. http://"ip of ESP-01s"/on will switch on the relay.
