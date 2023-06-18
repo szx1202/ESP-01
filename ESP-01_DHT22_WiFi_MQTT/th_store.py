@@ -13,7 +13,8 @@ msgTopic=" "
 msgPayload=" " 
 prevT="20"
 prevH= "50"
-delta_TH=0.5
+delta_T=1.0
+delta_H=2.0
 
 def ws_fileInit():
    global pathFile
@@ -34,11 +35,12 @@ def ws_fileWrite():
    if not os.path.exists(pathFile):
       print("no file")
       fileData=open(pathFile,'w')
-      fileData.write("Date Time;")
-      #fileData.write("Time;")
-      fileData.write("Temp(C);")
-      fileData.write("Hum (%);")
+      fileData.write("Date--")
+      fileData.write("Time--")
+      fileData.write("Temp(C)--")
+      fileData.write("Hum (%)")
       fileData.write("\n")
+      #fileData.write("\r")
    else:
       fileData=open(pathFile,'a')
       print("file OK")
@@ -64,16 +66,17 @@ def on_message(client, userdata, message):
    now = datetime.now()
    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
    #print("date and time =", dt_string)
-
+   current_date = now.strftime("%d/%m/%Y")
+   current_time = now.strftime("%H:%M:%S")
    if "temperature" in msgTopic :
-      if abs(float(msgPayload)-float(prevT))>delta_TH:
-         print("T= " + msgPayload)
-         fd.write(dt_string + ";" + msgPayload + ";" + prevH + "\n")
+      if abs(float(msgPayload)-float(prevT))>=delta_T:
+         print(current_time + " " + "T= " + msgPayload)
+         fd.write(current_date + "--" + current_time + "--" + msgPayload + "--" + prevH + "\n")
          prevT=msgPayload
    elif "humidity" in msgTopic:
-      if abs(float(msgPayload)-float(prevH))>delta_TH:
-         print("H= " + msgPayload)
-         fd.write(dt_string + ";" + prevT + ";" + msgPayload + "\n")
+      if abs(float(msgPayload)-float(prevH))>=delta_H:
+         print(current_time + " " + "H= " + msgPayload)
+         fd.write(current_date + "--" + current_time + "--" + prevT + "--" + msgPayload + "\n")
          prevH=msgPayload
    fd.close()
     
@@ -90,6 +93,7 @@ client.on_message = on_message
 client.connect("192.168.1.104")
 client.subscribe("sensor/temperature")
 client.subscribe("sensor/humidity")
-client.subscribe("sensor/led")
+client.subscribe("sensor/relay")
+client.subscribe("sensor/speed")
 client.loop_forever()
 

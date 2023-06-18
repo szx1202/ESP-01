@@ -24,11 +24,31 @@ tr{
 border: 1px solid gray;
 }
 .out
-{
+{ledrelay
 background-color:gray;
 }
 
-</style> <title>Display Indoor Temperature &amp; Humidity</title>
+
+button {
+    padding: 7px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button.blue {
+    background-color: #3498db;
+}
+
+button.green {
+    background-color: #2ecc71;
+}
+
+button.orange {
+   background-color: orangered;
+}
+
+</style> <title>ESP-01s Relay Control</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"
 
@@ -40,19 +60,8 @@ type="text/javascript"></script>
       var reconnectTimeout = 2000;
       var host="szweb.eu";
       var port=9001;
-      var sub_topic="sensor/#";
-      function onConnectionLost(){
-        console.log("connection lost");
-        document.getElementById("status").innerHTML = "Connection Lost";
-        document.getElementById("messages").innerHTML ="Connection Lost";
-        connected_flag=0;
-      }
+      var sub_topic="sensor/relay";
       
-      function onFailure(message) {
-        console.log("Failed");
-        document.getElementById("messages").innerHTML = "Connection Failed- Retrying";
-        setTimeout(MQTTconnect, reconnectTimeout);
-      }
       
       function onMessageArrived(r_message){
         out_msg="Message received "+r_message.payloadString+"<br>";
@@ -61,17 +70,10 @@ type="text/javascript"></script>
         console.log(out_msg);
         //document.getElementById("messages").innerHTML =out_msg;
         var topic=r_message.destinationName;
-        if(topic=="sensor/humidity")
-        {
-          document.getElementById("humidity").innerHTML =r_message.payloadString;
-        }
-        if(topic=="sensor/temperature")
-        {
-          document.getElementById("temperature").innerHTML =r_message.payloadString;
-        }
-				if(topic=="sensor/speed")
+
+				if(topic=="sensor/relay")
 				{
-					document.getElementById("speed").innerHTML =r_message.payloadString;
+					document.getElementById("relay").innerHTML =r_message.payloadString;
 				}
       }
       function onConnected(recon,url){
@@ -82,7 +84,6 @@ type="text/javascript"></script>
         // Once a connection has been made, make a subscription and send a message.
         //document.getElementById("messages").innerHTML ="Connected to "+host +"on port "+port;
         connected_flag=1
-        document.getElementById("status").innerHTML = "Connected";
         console.log("on Connect "+connected_flag);
         mqtt.subscribe(sub_topic);
 	  }
@@ -96,9 +97,8 @@ type="text/javascript"></script>
         var options = {
           timeout: 3,
           onSuccess: onConnect,
-          onFailure: onFailure,
         };
-        mqtt.onConnectionLost = onConnectionLost;
+       // mqtt.onConnectionLost = onConnectionLost;
         mqtt.onMessageArrived = onMessageArrived;
         //mqtt.onConnected = onConnected;
         mqtt.connect(options);
@@ -110,7 +110,6 @@ type="text/javascript"></script>
         if (connected_flag==0){
           out_msg="<b>Not Connected so can't subscribe</b>"
           console.log(out_msg);
-          document.getElementById("messages").innerHTML = out_msg;
           return false;
         }
         var stopic= document.forms["subs"]["Stopic"].value;
@@ -136,47 +135,41 @@ type="text/javascript"></script>
         return false;
       }
 
+    function myFunction() {
+      location.reload();
+    }
 	
     </script>
-  </head>
+    
+    <style>
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+      .button2 {background-color: #008CBA;} /* Blue */
+      .button3 {background-color: #f44336;} /* Red */ 
+      .button4 {background-color: #e7e7e7; color: black;} /* Gray */ 
+      .button5 {background-color: #555555;} /* Black */
+      </style>
+  
+</head>
   <body onload="MQTTconnect()">
-    <h1>Display Indoor Temperature &amp; Humidity</h1>
-    <table>
-      <tbody>
-        <tr>
-          <td>Temperature:</td>
-          <td id="temperature"><br />
-          </td>
-          <td><br />
-          </td>
-        </tr>
-        <tr>
-          <td>Humidity:</td>
-          <td id="humidity"><br />
-          </td>
-          <td><br />
-          </td>
-          <td> <br />
-          </td>
-        </tr>
-        <tr>
-          <td>Relay:</td>
-          <td class="switch"><input min="0" max="1" value="0" class="slider" id="relay"
 
-              onclick="send_message(this,'relay')" )="" type="range";/></td>
-        </tr>
-        <tr>
-          <td>Speed:</td>
-          <td class="slidecontainer"> <input type="range" min="0" max="255" value="0" class="slider" id="speed"
-              onclick="send_message(this,'speed')" )="" type="range";/>  </td>
-        </tr> 
-      </tbody>
-    </table>
-    <div id="status">Connection Status: Not Connected</div>
-    <br />
-    <p> Messages: </p>
-    <p>Look at <a href="wsdataread.php" target="_blank">Stored Data</a></p>
-    <p></p>
-    <p id="messages"></p>
+    <h1>Switch Relay</h1>
+          <td> Relay ON:</td>
+          <td> <button class="button button3" name="ON" onclick="myFunction();send_message(this,'relay')"  type="submit" value="1" > ON </button> </td>
+          <br> <br>
+          <td> Relay OFF:</td>
+          <td> <button class="button button5"  type="button" name="OFF" name="ON" onclick="myFunction();send_message(this,'relay')"  type="submit" value="0" > OFF </button> </td>
+
   </body>
 </html>
+
